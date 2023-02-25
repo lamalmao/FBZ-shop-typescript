@@ -1,8 +1,8 @@
 import { Model, Schema, model } from 'mongoose';
-import { ROLES, STATUSES, User } from './user';
-import { IUser } from './user-interface';
-import { GAMES } from '../../games';
-import { ManagerStatisticsField } from './manager-statistics';
+import { IUser } from './user-interface.js';
+import { GAMES } from '../../games.js';
+import { IManagerStatisticsField } from './manager-statistics.js';
+import { ROLES, STATUSES } from './user-constants.js';
 
 const userSchema = new Schema<IUser>({
   telegramId: {
@@ -34,7 +34,7 @@ const userSchema = new Schema<IUser>({
   onlineExpiresDate: {
     type: Date,
     required: true,
-    default: new Date(Date.now() + User.onlineShift)
+    default: new Date(Date.now() + 15 * 60 * 1000) // 15 Минут
   },
   balance: {
     type: Number,
@@ -52,7 +52,7 @@ const userSchema = new Schema<IUser>({
     enum: GAMES
   },
   statistics: {
-    type: [ ManagerStatisticsField ]
+    type: Array<IManagerStatisticsField>
     // required: false
   }
 });

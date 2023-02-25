@@ -1,4 +1,4 @@
-import { ManagerStatisticsField } from './manager-statistics';
+import { IManagerStatisticsField } from './manager-statistics.js';
 
 export interface IUser {
   telegramId: number;
@@ -8,7 +8,7 @@ export interface IUser {
   onlineExpiresDate: Date;
   balance: number;
   status: string;
-  statistics?: Array<ManagerStatisticsField>;
+  statistics?: Array<IManagerStatisticsField>;
   refills: number;
   game?: Array<string>;
 

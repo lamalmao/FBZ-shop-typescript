@@ -18,9 +18,14 @@ const logger = winston.createLogger({
   ),
   transports: [
     new DailyRotateFile({
-      filename: path.join(process.cwd(), 'logs', 'history.log'),
+      filename: path.join(process.cwd(), 'logs', 'errors', 'errors.log'),
       datePattern: 'dd-MM-YYYY',
       level: 'error'
+    }),
+    new DailyRotateFile({
+      filename: path.join(process.cwd(), 'logs', 'history', 'history.log'),
+      datePattern: 'dd-MM-YYYY',
+      level: 'info'
     }),
     new winston.transports.Console(),
   ]

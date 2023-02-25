@@ -1,30 +1,10 @@
-import { Document, Types } from 'mongoose';
-import { IUser } from './user-interface';
-import { userModel } from './user-model';
-import { ManagerStatisticsField } from './manager-statistics';
-import logger from '../../logger';
-import INoticeData from './notice';
-
-export enum ROLES {
-  CLIENT = 'client',
-  MANAGER = 'manager',
-  ADMIN = 'admin',
-  UNKOWN = 'unknown'
-}
-
-export enum STATUSES {
-  BANNED = 'banned',
-  NORMAL = 'normal',
-  UNKOWN = 'unknown'
-}
-
-
-export enum ACTIONS {
-  BANNED = 'banned',
-  ROLE_CHANGED = 'role-changed',
-  BALANCE_CHANGED = 'balance-changed',
-  TELEGRAM_ID_CHANGED = 'telegram-id-changed'
-}
+import { Types } from 'mongoose';
+import { IUser } from './user-interface.js';
+import { userModel } from './user-model.js';
+import { IManagerStatisticsField } from './manager-statistics.js';
+import logger from '../../logger.js';
+import INoticeData from './notice.js';
+import { ROLES, STATUSES, ACTIONS } from './user-constants.js';
 
 export class User implements IUser {
   public telegramId: number;
@@ -34,7 +14,7 @@ export class User implements IUser {
   public onlineExpiresDate: Date;
   public balance: number;
   public status: string;
-  public statistics?: Array<ManagerStatisticsField>;
+  public statistics?: Array<IManagerStatisticsField>;
   public refills: number;
   public game?: Array<string>;
 
@@ -44,15 +24,13 @@ export class User implements IUser {
   public static onlineShift: number = 15 * 1000 * 60;
   public static readonly UNKOWN: string = 'unknown';
 
-  protected databaseInstance?: Document<unknown, any, User>;
-
   public constructor (telegramId: number, username?: string, role?: string) {
     this.telegramId = telegramId;
     this.isUserDataLoaded = false;
 
     if (username && role) {
-      if (role in ROLES === false) {
-        throw new Error("Неизвестная роль");
+      if (!Object.values(ROLES).includes(role)) {
+        throw new Error('Данной роли не существует');
       }
 
       this.role = role;
@@ -64,7 +42,7 @@ export class User implements IUser {
       this.status = STATUSES.NORMAL;
       this.refills = 0;
       
-      this.statistics = new Array<ManagerStatisticsField>();
+      this.statistics = new Array<IManagerStatisticsField>();
     } else {
       this.telegramId = telegramId;
       this.isUserDataLoaded = false;
@@ -102,7 +80,6 @@ export class User implements IUser {
 
       this._id = result._id;
       this.isUserDataLoaded = true;
-      this.databaseInstance = result;
 
       return true;
     } else {
@@ -117,7 +94,6 @@ export class User implements IUser {
 
     if (!userDBInstance) {
       this.isUserDataLoaded = false;
-      this.databaseInstance = undefined;
       return false;
     }
 
@@ -132,7 +108,6 @@ export class User implements IUser {
     this.balance = userDBInstance.balance;
     this.refills = userDBInstance.refills;
 
-    this.databaseInstance = userDBInstance;
     this.isUserDataLoaded = true;
 
     return true;

@@ -1,6 +1,6 @@
 {
   "name": "bot-shop-provider",
-  "version": "0.0.2",
+  "version": "0.1.1b",
   "description": "telebot",
   "main": "dist/index.js",
   "author": "lamalmao <laesia>",
