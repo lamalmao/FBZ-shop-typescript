@@ -1,10 +1,11 @@
 {
   "name": "bot-shop-provider",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "telebot",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "author": "lamalmao <laesia>",
   "license": "MIT",
+  "type": "module",
   "private": true,
   "devDependencies": {
     "@types/axios": "^0.14.0",
@@ -19,5 +20,9 @@
     "telegraf": "^4.11.2",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "npx tsc"
   }
 }
