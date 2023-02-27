@@ -1,8 +1,8 @@
 {
   "name": "bot-shop-provider",
-  "version": "0.1.1b",
+  "version": "3.0.1с",
   "description": "telebot",
-  "main": "dist/index.js",
+  "module": "dist/index.js",
   "author": "lamalmao <laesia>",
   "license": "MIT",
   "type": "module",
@@ -17,6 +17,7 @@
     "axios": "^1.3.3",
     "express": "^4.18.2",
     "mongoose": "^6.9.1",
+    "pug": "^3.0.2",
     "telegraf": "^4.11.2",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"

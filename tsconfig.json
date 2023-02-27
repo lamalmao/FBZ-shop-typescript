@@ -8,6 +8,7 @@
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "outDir": "dist",
+    "rootDir": "src",
     // Strict Checks
     "alwaysStrict": true,
     "noImplicitAny": true,
