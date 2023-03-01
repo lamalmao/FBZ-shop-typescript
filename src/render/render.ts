@@ -42,7 +42,7 @@ abstract class Render implements IRender {
 }
 
 export class CategoryRender extends Render {
-  constructor(templateFilename: string, outDir: string) {
+  constructor(templateFilename: string, outDir?: string) {
     super(templateFilename, outDir);
   }
 
@@ -55,7 +55,7 @@ export class CategoryRender extends Render {
 }
 
 export class ItemRender extends Render {
-  constructor(templateFilename: string, outDir: string) {
+  constructor(templateFilename: string, outDir?: string) {
     super(templateFilename, outDir);
   }
 
