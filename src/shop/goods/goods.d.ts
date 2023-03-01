@@ -5,7 +5,7 @@ export default interface IItem {
   _id?: Types.ObjectId;
   category?: Types.ObjectId;
   title?: string;
-  delivery?: number;
+  delivery?: string;
   game?: string;
   isVBucks?: boolean;
   shortDescription?: string;

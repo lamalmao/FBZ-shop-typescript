@@ -74,7 +74,7 @@ const itemSchema = new Schema<IItem> ({
     required: true,
     default: 0,
     min: 0,
-    max: 1
+    max: 100
   },
   options: {
     type: Array<IOptions>,
