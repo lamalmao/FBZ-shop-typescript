@@ -7,4 +7,5 @@ export default interface INoticeData {
   username?: string;
   telegramId?: number;
   oldTelegramId?: number;
+  region?: string;
 }
