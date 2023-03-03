@@ -1,10 +1,11 @@
 import { Types } from 'mongoose';
 import { IUser } from './user-interface.js';
-import { userModel } from './user-model.js';
+import { ONLINE_SHIFT, REGIONS, userModel } from './user-model.js';
 import { IManagerStatisticsField } from './manager-statistics.js';
 import logger from '../../logger.js';
 import INoticeData from './notice.js';
 import { ROLES, STATUSES, ACTIONS } from './user-constants.js';
+import userNoticeEmitter from '../../bot/notice-events/notice.js';
 
 export class User implements IUser {
   public telegramId: number;
@@ -17,22 +18,38 @@ export class User implements IUser {
   public statistics?: Array<IManagerStatisticsField>;
   public refills: number;
   public game?: Array<string>;
+  public region?: string;
 
   private _id?: Types.ObjectId;
-  private isUserDataLoaded: boolean;
 
-  public static onlineShift: number = 15 * 1000 * 60;
+  public static onlineShift: number = ONLINE_SHIFT;
   public static readonly UNKOWN: string = 'unknown';
 
-  public constructor (telegramId: number, username?: string, role?: string) {
-    this.telegramId = telegramId;
-    this.isUserDataLoaded = false;
+  public static async provideAction(userId: number): Promise<boolean> {
+    const user = new User(userId);
+    const loadResult = await user.loadFromBase();
 
-    if (username && role) {
+    if (!loadResult) {
+      return true;
+    }
+
+    user.acted().catch(err => logger.error(err));
+    return user.status !== STATUSES.BANNED;
+  }
+
+  public constructor (telegramId: number, username?: string, role?: string, region?: string) {
+    this.telegramId = telegramId;
+
+    if (username && role && region) {
       if (!Object.values(ROLES).includes(role)) {
         throw new Error('Данной роли не существует');
       }
 
+      if (!Object.values(REGIONS).includes(region)) {
+        region = REGIONS.RU;
+      }
+
+      this.region = region;
       this.role = role;
       this.username = username;
 
@@ -45,7 +62,6 @@ export class User implements IUser {
       this.statistics = new Array<IManagerStatisticsField>();
     } else {
       this.telegramId = telegramId;
-      this.isUserDataLoaded = false;
       this.username = User.UNKOWN;
       this.role = ROLES.UNKOWN;
       this.joinDate = new Date(0);
@@ -56,8 +72,18 @@ export class User implements IUser {
     }
   }
 
+  private async acted(): Promise<void> {
+    await userModel.updateOne({
+      telegramId: this.telegramId
+    }, {
+      $set: {
+        lastAction: new Date()
+      }
+    });
+  }
+
   public async saveNewUser(): Promise<boolean> {
-    if (this.username === User.UNKOWN || this.role === ROLES.UNKOWN || this.status === STATUSES.UNKOWN) {
+    if (this.username === User.UNKOWN || this.role === ROLES.UNKOWN || this.status === STATUSES.UNKOWN || !this.region) {
       return false;
     }
 
@@ -71,7 +97,8 @@ export class User implements IUser {
         telegramId: this.telegramId,
         role: this.role,
         game: this.game,
-        statistics: statsField
+        statistics: statsField,
+        region: this.region
       });
 
       if (!result) {
@@ -79,7 +106,6 @@ export class User implements IUser {
       }
 
       this._id = result._id;
-      this.isUserDataLoaded = true;
 
       return true;
     } else {
@@ -87,13 +113,12 @@ export class User implements IUser {
     }
   }
 
-  public async updateData(): Promise<boolean> {
+  public async loadFromBase(): Promise<boolean> {
     const userDBInstance = await userModel.findOne({
       telegramId: this.telegramId
     });
 
     if (!userDBInstance) {
-      this.isUserDataLoaded = false;
       return false;
     }
 
@@ -108,16 +133,12 @@ export class User implements IUser {
     this.balance = userDBInstance.balance;
     this.refills = userDBInstance.refills;
 
-    this.isUserDataLoaded = true;
 
     return true;
   }
 
   public async ban(): Promise<void> {
-    if (!this.isUserDataLoaded) {
-      logger.info(`User ${this.telegramId}:${this.username} doesn't loaded to database`);
-      return;
-    }
+    await this.loadFromBase();
 
     if (this.status !== STATUSES.BANNED) {
       this.status = STATUSES.BANNED;
@@ -136,9 +157,7 @@ export class User implements IUser {
       throw new Error('Данной роли не существует');
     }
 
-    if (!this.isUserDataLoaded) {
-      await this.updateData();
-    }
+    await this.loadFromBase();
 
     this.role = role;
     await userModel.updateOne({
@@ -159,9 +178,7 @@ export class User implements IUser {
       throw new Error('Нельзя изменить баланс на 0');
     }
 
-    if (!this.isUserDataLoaded) {
-      await this.updateData();
-    }
+    await this.loadFromBase();
 
     const newBalance = (this.balance <= Math.abs(modifier) && modifier < 0) ? 0 : this.balance + modifier;
     this.balance = newBalance;
@@ -183,9 +200,7 @@ export class User implements IUser {
   }
 
   public async changeTelegramId(newId: number): Promise<void> {
-    if (!this.isUserDataLoaded) {
-      await this.updateData();
-    }
+    await this.loadFromBase();
 
     logger.info(`Попытка переноса данных аккаунта пользователя ${this.username}:${this.telegramId}. Новое значение: ${newId}`);
 
@@ -220,9 +235,7 @@ export class User implements IUser {
       throw new Error('Нельзя добавить нулевое или отрицательное число секунд.');
     }
 
-    if (!this.isUserDataLoaded) {
-      await this.updateData();
-    }
+    await this.loadFromBase();
 
     if (timeShift) {
       timeShift *= 1000;
@@ -244,9 +257,32 @@ export class User implements IUser {
     return newOnlineDate;
   }
 
+  public async changeRegion(newRegion: string): Promise<void> {
+    await this.loadFromBase();
+
+    if (!Object.values(REGIONS).includes(newRegion)) {
+      throw new Error('Недоступный регион');
+    }
+
+    await userModel.updateOne({
+      telegramId: this.telegramId
+    }, {
+      $set: {
+        region: newRegion
+      }
+    });
+    this.region = newRegion;
+
+    this.notice(ACTIONS.REGION_CHANGED, {
+      region: newRegion
+    }).catch(err => logger.error(err));
+  }
+
   private async notice(action: string, data?: INoticeData): Promise<void> {
     logger.info(action);
     logger.data(data);
+
+    userNoticeEmitter.emit(action, data);
     return;
   }
 }

@@ -13,7 +13,8 @@ export const STATUSES = {
 
 export const ACTIONS = {
   BANNED: 'banned',
-  ROLE_CHANGED: 'role-changed',
-  BALANCE_CHANGED: 'balance-changed',
-  TELEGRAM_ID_CHANGED: 'telegram-id-changed'
+  ROLE_CHANGED: 'role changed',
+  BALANCE_CHANGED: 'balance changed',
+  TELEGRAM_ID_CHANGED: 'telegram id changed',
+  REGION_CHANGED: 'region changed'
 }

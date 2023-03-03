@@ -6,11 +6,13 @@ export interface IUser {
   role: string;
   joinDate: Date;
   onlineExpiresDate: Date;
+  lastAction?: Date;
   balance: number;
   status: string;
   statistics?: Array<IManagerStatisticsField>;
   refills: number;
   game?: Array<string>;
+  region?: string;
 
   /**
    * @param role - новая роль для пользователя из ROLES
@@ -41,7 +43,7 @@ export interface IUser {
   /**
    * @description загружает из базы данных информацию об пользователе в объект @class User
    */
-  updateData(): Promise<boolean>;
+  loadFromBase(): Promise<boolean>;
   /**
    * @description сохраняет нового пользователя в базу данных. Не применять для обновления параметров, т.к. данная функция загружает все поля.
    */
