@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { ICover } from '../cover.js';
 
 export interface IGoodsCategory {
   type?: string;
@@ -9,6 +10,7 @@ export interface IGoodsCategory {
   modificationDate?: Date;
   hidden?: boolean;
   image?: string;
+  covers?: ICover;
 
   /**
    * @description удаляет категорию из базы данных

@@ -1,6 +1,7 @@
 import { Model, Schema, model } from 'mongoose';
 import { IGoodsCategory } from './category.d.js';
 import { CATEGORY_TYPES } from './category.js';
+import { Cover } from '../cover.js';
 
 export const CATEGORY_IMAGE_BLANK = 'category_blank.jpg';
 
@@ -32,6 +33,10 @@ const categorySchema = new Schema<IGoodsCategory> ({
     type: String,
     required: true,
     default: CATEGORY_IMAGE_BLANK
+  },
+  covers: {
+    type: Cover,
+    required: false
   },
   hidden: {
     type: Boolean,

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import IItem from './goods.d.js';
-import IOptions from './options.js';
+import Options from './options.js';
 import { GAMES } from '../../games.js';
 import { itemModel } from './item-model.js';
 import { Category } from '../categories/category.js';
@@ -9,6 +9,7 @@ import { ItemRender } from '../../render/render.js';
 import { GOODS_COVER_TEMPLATE, imagesDir } from '../../properties.js';
 import fs from 'fs';
 import path from 'path';
+import { Scenarios } from '../../bot/scenarios/scenarios.js';
 
 export const DELIVERY_TYPES = {
   INSTANT: 'instant',
@@ -33,7 +34,8 @@ export class Goods implements IItem {
   public cover?: string;
   public price?: number;
   public discount?: number;
-  public options?: IOptions[];
+  public options?: Options;
+  public scenario?: string;
 
   protected static itemRender: ItemRender = new ItemRender(GOODS_COVER_TEMPLATE);
 
@@ -54,6 +56,11 @@ export class Goods implements IItem {
       this.image = opts.image;
       this.cover = opts.cover;
       this.options = opts.options;
+      this.scenario = opts.scenario;
+
+      if (this.scenario && !Scenarios.Scenario.LoadedScenarios.has(this.scenario)) {
+        throw new Error(`Сценарий ${this.scenario} не найден`);
+      }
 
       if (opts.delivery) {
         if (Object.values(DELIVERY_TYPES).includes(opts.delivery)) {
@@ -78,7 +85,7 @@ export class Goods implements IItem {
       }
     }
   }
-
+  
   public async loadFromBase(): Promise<void> {
     if (!this._id) {
       throw new Error('id товара неизвестен');
@@ -337,7 +344,7 @@ export class Goods implements IItem {
     this.setModified().catch(err => logger.error(err));
   }
 
-  public async changeOptions(newOptions: Array<IOptions>): Promise<void> {
+  public async changeOptions(newOptions: Options): Promise<void> {
     await this.loadFromBase();
 
     await itemModel.updateOne({

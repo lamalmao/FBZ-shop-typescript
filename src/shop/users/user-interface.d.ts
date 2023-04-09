@@ -10,7 +10,6 @@ export interface IUser {
   balance: number;
   status: string;
   statistics?: Array<IManagerStatisticsField>;
-  refills: number;
   game?: Array<string>;
   region?: string;
 

@@ -16,7 +16,6 @@ export class User implements IUser {
   public balance: number;
   public status: string;
   public statistics?: Array<IManagerStatisticsField>;
-  public refills: number;
   public game?: Array<string>;
   public region?: string;
 
@@ -57,7 +56,6 @@ export class User implements IUser {
       this.onlineExpiresDate = new Date(Date.now() + User.onlineShift);
       this.balance = 0;
       this.status = STATUSES.NORMAL;
-      this.refills = 0;
       
       this.statistics = new Array<IManagerStatisticsField>();
     } else {
@@ -68,7 +66,6 @@ export class User implements IUser {
       this.onlineExpiresDate = new Date(0);
       this.balance = -1;
       this.status = STATUSES.UNKOWN;
-      this.refills = -1;
     }
   }
 
@@ -131,7 +128,6 @@ export class User implements IUser {
     this.status = userDBInstance.status;
     this.game = userDBInstance.game;
     this.balance = userDBInstance.balance;
-    this.refills = userDBInstance.refills;
 
 
     return true;

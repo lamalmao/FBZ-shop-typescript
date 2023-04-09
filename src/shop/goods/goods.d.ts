@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import IOptions from './options.d.js';
+import Options from './options.ts';
 
 export default interface IItem {
   _id?: Types.ObjectId;
@@ -18,5 +18,6 @@ export default interface IItem {
   cover?: string;
   price?: number;
   discount?: number;
-  options?: Array<IOptions>;
+  options?: Options;
+  scenario?: string;
 }

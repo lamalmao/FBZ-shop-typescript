@@ -2,7 +2,7 @@ import { Schema, model, Types } from 'mongoose';
 import IItem from './goods.d.js';
 import { DELIVERY_TYPES } from './goods.js';
 import { GAMES } from '../../games.js';
-import IOptions from './options.js';
+import Options from './options.js';
 
 export const ITEM_IMAGE_BLANK = 'item_image_blank.jpg';
 export const ITEM_COVER_BLANK = 'item_cover_blank.jpg';
@@ -77,8 +77,12 @@ const itemSchema = new Schema<IItem> ({
     max: 100
   },
   options: {
-    type: Array<IOptions>,
+    type: Options,
     required: false
+  },
+  scenario: {
+    type: String,
+    required: true
   }
 });
 

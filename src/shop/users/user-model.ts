@@ -50,11 +50,6 @@ const userSchema = new Schema<IUser>({
     required: true,
     default: 0
   },
-  refills: {
-    type: Number,
-    required: true,
-    default: 0
-  },
   game: {
     type: [String],
     required: false,

@@ -1,0 +1,75 @@
+{
+  "name": "another-scenario",
+  "acts": [
+    {
+      "id": 0,
+      "content": "Совсем другой текст",
+      "type": "info",
+      "buttons": [
+        [ {
+          "content": "Далее",
+          "type": "move",
+          "pointer": 1
+        } ],
+        [ {
+          "content": "Отмена покупки",
+          "type": "cancel"
+        } ]
+      ]
+    },
+    {
+      "id": 1,
+      "content": "Введите **логин** *(проверка почты выключена)*",
+      "type": "data",
+      "dataType": "login",
+      "validate": false,
+      "next": 2,
+      "buttons": [
+        [ {
+          "content": "Назад",
+          "type": "move",
+          "pointer": 0
+        } ],
+        [ {
+          "content": "Отмена",
+          "type": "cancel"
+        } ]
+      ]
+    },
+    {
+      "id": 2,
+      "content": "Введите **пароль**",
+      "type": "data",
+      "dataType": "password",
+      "validate": true,
+      "next": 3,
+      "buttons": [
+        [ {
+          "content": "Назад",
+          "type": "move",
+          "pointer": 2
+        } ],
+        [ {
+          "content": "Отмена",
+          "type": "cancel"
+        } ]
+      ]
+    },
+    {
+      "id": 3,
+      "content": "Проверьте введенные данные:\nПочта: **{login}**\nПароль: **{password}**",
+      "type": "showup",
+      "buttons": [
+        [ {
+          "content": "Все верно",
+          "type": "sell"
+        } ],
+        [ {
+          "content": "Исправить",
+          "type": "move",
+          "pointer": 1
+        } ]
+      ]
+    }
+  ]
+}
